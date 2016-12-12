@@ -212,7 +212,8 @@ static void capture_cleanup(void* p)
         
         frameCount = 0;
         totalFrameCount = 0;
-        
+        iYUVIdx   = 0;
+
         captureView = cView;
         CALayer *captureViewLayer = [captureView layer];
         CGColorRef blackColor = CGColorCreateGenericGray(0.0, 1.0);
@@ -238,6 +239,14 @@ static void capture_cleanup(void* p)
     [fpsTimer invalidate];
     fpsTimer = nil;
     
+    if(pYUVFile != NULL)
+    {
+        fclose(pYUVFile);
+        pYUVFile = NULL;
+    }
+    iYUVIdx = 0;
+    FileStatus = false;
+
     [captureLayer removeFromSuperlayer];
     [captureLayer release];
     
@@ -749,6 +758,8 @@ static void capture_cleanup(void* p)
     [summaryInfo appendFormat:@"\nSession Preset: %@", [captureSession sessionPreset]];
     [summaryInfo appendFormat:@"\nFrame Rate: %d", realFrameRate];
     [summaryInfo appendFormat:@"\nFrame Count: %d", totalFrameCount];
+    [summaryInfo appendFormat:@"\niYUVIdx:     %d", iYUVIdx];
+    [summaryInfo appendFormat:@"\nFileStatus:  %d", FileStatus];
     
     if(NO == bScreenCapture) {
         [summaryInfo appendFormat:@"\nDevice Active Info: %@ min FD = %f, max FD = %f", [captureDevice activeFormat], CMTimeGetSeconds([captureDevice activeVideoMinFrameDuration]), CMTimeGetSeconds([captureDevice activeVideoMaxFrameDuration])];
@@ -824,10 +835,27 @@ static void capture_cleanup(void* p)
         realPixelFormat = pixelFormat;
         realPixelWidth = pixelWidth;
         realPixelHeight = pixelHeight;
+
+        if(NULL == pYUVFile)
+        {
+            NSString *DestopDir     = @"~/Desktop";
+            DestopDir               = [DestopDir stringByStandardizingPath];
+            NSString *YUVName       = [NSString stringWithFormat:@"%@/TestYUV_nv12_%lux%lu.yuv", DestopDir, pixelWidth, pixelHeight];
+            const char* YUVFilePath = [YUVName UTF8String];
+            pYUVFile                = fopen(YUVFilePath, "wb");
+            FileStatus              = true;
+        }
         
+        if(pYUVFile != NULL && iYUVIdx >30)
+        {
+            fwrite ((unsigned char *)planeAddress[0] , sizeof(unsigned char), pixelWidth * pixelHeight,   pYUVFile);
+            fwrite ((unsigned char *)planeAddress[1] , sizeof(unsigned char), pixelWidth * pixelHeight/2, pYUVFile);
+        }
+        iYUVIdx ++;
+
         frameCount++;
         totalFrameCount++;
-        
+
         [self setCaptureLayerHidden:YES];
         if(true == isPlanar)
         {
