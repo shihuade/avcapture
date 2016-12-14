@@ -57,7 +57,9 @@ typedef NS_ENUM(NSInteger, AVCaptureDeviceChangeType) {
     
     FILE* pYUVFile;
     bool  FileStatus;
-    int   iYUVIdx;
+    int      iYUVIdx;
+    size_t   iYUVWidth;
+    size_t   iYUVHeight;
 
     AVCaptureView *captureView;
     AVSampleBufferDisplayLayer *captureLayer;

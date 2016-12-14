@@ -20,6 +20,7 @@
 		57E2C8AA153D659300658FB9 /* MainMenu.xib in Resources */ = {isa = PBXBuildFile; fileRef = 57E2C8A8153D659300658FB9 /* MainMenu.xib */; };
 		57E2C8B6153D668000658FB9 /* AVCaptureEngine.mm in Sources */ = {isa = PBXBuildFile; fileRef = 57E2C8B5153D668000658FB9 /* AVCaptureEngine.mm */; };
 		57E2C8BC153D672000658FB9 /* AVFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 57E2C8BB153D672000658FB9 /* AVFoundation.framework */; };
+		ECE0EF411DFE8F91006A56E6 /* run_NV12ToYUV420.sh in Resources */ = {isa = PBXBuildFile; fileRef = ECE0EF401DFE8F91006A56E6 /* run_NV12ToYUV420.sh */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -45,6 +46,7 @@
 		57E2C8B4153D668000658FB9 /* AVCaptureEngine.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AVCaptureEngine.h; sourceTree = "<group>"; };
 		57E2C8B5153D668000658FB9 /* AVCaptureEngine.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = AVCaptureEngine.mm; sourceTree = "<group>"; };
 		57E2C8BB153D672000658FB9 /* AVFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AVFoundation.framework; path = System/Library/Frameworks/AVFoundation.framework; sourceTree = SDKROOT; };
+		ECE0EF401DFE8F91006A56E6 /* run_NV12ToYUV420.sh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.script.sh; name = run_NV12ToYUV420.sh; path = ../../run_NV12ToYUV420.sh; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -108,6 +110,7 @@
 		57E2C899153D659300658FB9 /* AVCaptureDemo */ = {
 			isa = PBXGroup;
 			children = (
+				ECE0EF401DFE8F91006A56E6 /* run_NV12ToYUV420.sh */,
 				57E2C8B4153D668000658FB9 /* AVCaptureEngine.h */,
 				57E2C8B5153D668000658FB9 /* AVCaptureEngine.mm */,
 				57CF5E7816819E0800D69354 /* AVCaptureView.h */,
@@ -182,6 +185,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				ECE0EF411DFE8F91006A56E6 /* run_NV12ToYUV420.sh in Resources */,
 				57E2C89E153D659300658FB9 /* InfoPlist.strings in Resources */,
 				57E2C8A4153D659300658FB9 /* Credits.rtf in Resources */,
 				57E2C8AA153D659300658FB9 /* MainMenu.xib in Resources */,

@@ -244,7 +244,9 @@ static void capture_cleanup(void* p)
         fclose(pYUVFile);
         pYUVFile = NULL;
     }
-    iYUVIdx = 0;
+    iYUVIdx    = 0;
+    iYUVWidth  =0;
+    iYUVHeight = 0;
     FileStatus = false;
 
     [captureLayer removeFromSuperlayer];
@@ -835,12 +837,23 @@ static void capture_cleanup(void* p)
         realPixelFormat = pixelFormat;
         realPixelWidth = pixelWidth;
         realPixelHeight = pixelHeight;
+        
+        if( iYUVWidth != pixelWidth || iYUVHeight != pixelHeight )
+        {
+            if(NULL != pYUVFile)
+            {
+                fclose(pYUVFile);
+                pYUVFile = NULL;
+            }
+            iYUVWidth  = realPixelWidth;
+            iYUVHeight = realPixelHeight;
+        }
 
         if(NULL == pYUVFile)
         {
             NSString *DestopDir     = @"~/Desktop";
             DestopDir               = [DestopDir stringByStandardizingPath];
-            NSString *YUVName       = [NSString stringWithFormat:@"%@/TestYUV_nv12_%lux%lu.yuv", DestopDir, pixelWidth, pixelHeight];
+            NSString *YUVName       = [NSString stringWithFormat:@"%@/TestYUV_%lux%lu_nv12.yuv", DestopDir, pixelWidth, pixelHeight];
             const char* YUVFilePath = [YUVName UTF8String];
             pYUVFile                = fopen(YUVFilePath, "wb");
             FileStatus              = true;
