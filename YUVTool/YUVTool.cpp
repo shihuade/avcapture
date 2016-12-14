@@ -55,10 +55,12 @@ void Processing (int iMode, char* src_yuv, char* dst_yuv, int iWidth, int iHeigh
   }
 
   j = 0;
-  int iFrameSize;
+  int iFrameSize = 0;
+  int iReadSize  = 0;
   long long iLeftLength = iFileLen;
   //rewrite each frame
   while (EOF != ftell (fpSrc) && iLeftLength) {
+    printf ("Transform frame(%d x %d) idx is: %d\n", iWidth, iHeight, iFrameNum);
     switch (iMode) {
     case RGBTOYUV420:
       iFrameSize = iLumaSize * 3;
@@ -74,10 +76,21 @@ void Processing (int iMode, char* src_yuv, char* dst_yuv, int iWidth, int iHeigh
       break;
     case NV12TOYUV420:
       iFrameSize = iLumaSize + iChromaSize + iChromaSize;
-      fread (pSrcY, 1, iFrameSize, fpSrc);
+      if(iFrameSize > iFileLen) {
+          printf ("iFrameSize(%d) > iFileLen(%llu) \n", iFrameSize, iFileLen);
+          return;
+      }
+
+      iReadSize = fread (pSrcY, 1, iFrameSize, fpSrc);
+      if ( iReadSize != iFrameSize)
+      {
+          printf ("iReadSize is%d  \n", iReadSize);
+          return;
+      }
       nv12_to_i420_c (pSrcY, iWidth, pDstY, pDstU, pDstV,
                       iWidth, iWidth >> 1, iWidth, iHeight, 0);
       break;
+
     default:
       break;
     }
@@ -89,13 +102,13 @@ void Processing (int iMode, char* src_yuv, char* dst_yuv, int iWidth, int iHeigh
     iLeftLength -= iFrameSize;
     j++;
     iFrameNum ++;
-    
     if (iEndFrames > 0 && j==iEndFrames) {
       break;
     }
   }
 
-  printf ("Completed conversion, frame num is: %d\n", iFrameNum);
+  printf ("Total transformed frame num is: %d\n", iFrameNum);
+
   fclose (fpDst);
   fclose (fpSrc);
 
