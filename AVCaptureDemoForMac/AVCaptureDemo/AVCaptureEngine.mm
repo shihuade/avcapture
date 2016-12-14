@@ -758,10 +758,10 @@ static void capture_cleanup(void* p)
     [summaryInfo appendFormat:@"Pixel Format Type: %@ [%@ - 0x%8x]", [self getFormatString:[NSNumber numberWithUnsignedInt:realPixelFormat]], NSFileTypeForHFSTypeCode(realPixelFormat), realPixelFormat];
     [summaryInfo appendFormat:@"\nResolution: %ld x %ld", realPixelWidth, realPixelHeight];
     [summaryInfo appendFormat:@"\nSession Preset: %@", [captureSession sessionPreset]];
-    [summaryInfo appendFormat:@"\nFrame Rate: %d", realFrameRate];
-    [summaryInfo appendFormat:@"\nFrame Count: %d", totalFrameCount];
-    [summaryInfo appendFormat:@"\niYUVIdx:     %d", iYUVIdx];
-    [summaryInfo appendFormat:@"\nFileStatus:  %d", FileStatus];
+    [summaryInfo appendFormat:@"\nFrame Rate:    %d", realFrameRate];
+    [summaryInfo appendFormat:@"\nFrame Count:   %d", totalFrameCount];
+    [summaryInfo appendFormat:@"\nCaptutred Num: %d", iYUVIdx - 30];
+    [summaryInfo appendFormat:@"\nFileStatus:    %d", FileStatus];
     
     if(NO == bScreenCapture) {
         [summaryInfo appendFormat:@"\nDevice Active Info: %@ min FD = %f, max FD = %f", [captureDevice activeFormat], CMTimeGetSeconds([captureDevice activeVideoMinFrameDuration]), CMTimeGetSeconds([captureDevice activeVideoMaxFrameDuration])];
@@ -847,6 +847,7 @@ static void capture_cleanup(void* p)
             }
             iYUVWidth  = realPixelWidth;
             iYUVHeight = realPixelHeight;
+            iYUVIdx    = 0;
         }
 
         if(NULL == pYUVFile)
