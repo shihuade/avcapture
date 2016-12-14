@@ -21,27 +21,29 @@ runUsage()
     echo -e "\033[32m                \${TransformIterm} \${Resolution}                   \033[0m"
     echo ""
     echo -e "\033[32m  \${YUVProfile} should be: screen/camera                           \033[0m"
+    echo -e "\033[32m                            if non: set as camera                   \033[0m"
     echo -e "\033[32m  \${Option}     should be: transform/upload/pipeline               \033[0m"
+    echo -e "\033[32m                            if non: set as transform                \033[0m"
     echo -e "\033[32m                            transform: NV12To420 only               \033[0m"
     echo -e "\033[32m                            upload:    upload to ftp only           \033[0m"
     echo -e "\033[32m                            pipeline:  nv12To420 and upload to ftp  \033[0m"
     echo -e "\033[32m  \${TransformIterm} should be:                                     \033[0m"
-    echo -e "\033[32m                            no value:  all .yuv file in ~/Desktop   \033[0m"
+    echo -e "\033[32m                            if non:    all .yuv file in ~/Desktop   \033[0m"
     echo -e "\033[32m                            file:      .yuv file                    \033[0m"
     echo -e "\033[32m                            dir:       .yuv files in dir            \033[0m"
-    echo -e "\033[32m  \${Resolution}   should be: optional param, no value as default   \033[0m"
-    echo -e "\033[32m                               shoule be1080p 720p etc.             \033[0m"
-    echo ""
+    echo -e "\033[32m  \${Resolution}   should be: shoule be 1080p 720p etc.             \033[0m"
+    echo -e "\033[32m                            if non:   no value                      \033[0m"
+    echo -e "\033[32m******************************************************************\n\033[0m"
     echo -e "\033[33m  nv12 to 420, yuv file name must have nv12/resolution patern       \033[0m"
     echo -e "\033[33m              TestYUV_nv12_1920x1080.yuv                            \033[0m"
 
-    echo ""
+    echo -e "\033[32m******************************************************************\n\033[0m"
     echo -e "\033[34m Example:                                                           \033[0m"
     echo -e "\033[34m   1. nv12 to 420 only for  ./YUV/TestYUV_nv12_1920x1080.yuv        \033[0m"
     echo -e "\033[34m      $0 camera transform   ./YUV/TestYUV_nv12_1920x1080.yuv        \033[0m"
     echo ""
-    echo -e "\033[34m   2. upload to ftp only for  ./YUV/TestYUV_nv12_1920x1080.yuv      \033[0m"
-    echo -e "\033[34m      $0 camera upload      ./YUV/TestYUV_nv12_1920x1080.yuv  1080p \033[0m"
+    echo -e "\033[34m   2. upload to ftp only for ./YUV/TestYUV_nv12_1920x1080.yuv       \033[0m"
+    echo -e "\033[34m      $0 camera upload       ./YUV/TestYUV_nv12_1920x1080.yuv  1080p\033[0m"
     echo ""
     echo -e "\033[34m   3. nv12 to 420 then upload to ftp for TestYUV_nv12_1920x1080.yuv \033[0m"
     echo -e "\033[34m      $0 camera pipeline    ./YUV/TestYUV_nv12_1920x1080.yuv        \033[0m"
@@ -102,10 +104,12 @@ runInit()
 runParamValidate()
 {
     let "Flag = 0"
+    [ -z "$YUVProfile" ] && YUVProfile="camera"
     [ ! "$YUVProfile" = "screen" ] && [ ! "$YUVProfile" = "camera" ] && let "Flag = 1"
     [ ! ${Flag} -eq 0 ] && echo "Param error----YUVProfile should be sreen or camera" && runUsage
 
     let "Flag = 0"
+    [ -z "$Option" ] && Option="transform"
     [ ! "$Option" = "transform" ] && [ ! "$Option" = "upload" ] && [ ! "$Option" = "pipeline" ] && let "Flag = 1"
     [ ! ${Flag} -eq 0 ]           && echo "Param error----Option should be transform,camera or pipeline" && runUsage
 
@@ -177,8 +181,8 @@ runParseAndGenerateYUVFileInfo()
     do
         if [[ $Iterm =~ $Pattern_01 ]] && [[ $Iterm =~ $Pattern_02 ]] && [[ $Iterm =~ $Pattern_03 ]]
         then
-            PicWidth=`echo $Iterm  | awk 'BEGIN {FS="[xX]"} {print $1}'`
-            PicHeight=`echo $Iterm | awk 'BEGIN {FS="[xX]"} {print $2}'`
+            YUVWidth=`echo $Iterm  | awk 'BEGIN {FS="[xX]"} {print $1}'`
+            YUVHeight=`echo $Iterm | awk 'BEGIN {FS="[xX]"} {print $2}'`
         fi
     done
 
@@ -269,10 +273,7 @@ Option=$2
 TransformIterm=$3
 Resolution=$4
 
-if [ $# -lt 2 ]
-then
-    runUsage
-fi
+[ "$1" = "-h" ] || [ "$1" = "-help" ] && runUsage
 
 runMain
 #*******************************************************
