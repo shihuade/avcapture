@@ -379,8 +379,12 @@ int convert_y420nv_to_rgb24_buffer(unsigned char *y, unsigned char *uv, unsigned
     m_lock = NULL;
     
     m_rgb24Buffer = NULL;
+    m_YUVCbBuffer = NULL;
+    m_YUVCrBuffer = NULL;
+
     m_rgb24BufferSize = 0;
-    
+    m_UVBufferSize    = 0;
+    m_pYUVIdx         = 0;
     self = [super initWithFrame:frame];
     if (self) {
         // Initialization code here.
@@ -398,8 +402,12 @@ int convert_y420nv_to_rgb24_buffer(unsigned char *y, unsigned char *uv, unsigned
     m_lock = NULL;
     
     m_rgb24Buffer = NULL;
+    m_YUVCbBuffer = NULL;
+    m_YUVCrBuffer = NULL;
+
     m_rgb24BufferSize = 0;
-    
+    m_UVBufferSize    = 0;
+    m_pYUVIdx         = 0;
     self = [super initWithCoder:aDecoder];
     if (self) {
         // Initialization code here.
@@ -423,8 +431,27 @@ int convert_y420nv_to_rgb24_buffer(unsigned char *y, unsigned char *uv, unsigned
         delete[] m_rgb24Buffer;
         m_rgb24Buffer = NULL;
     }
+
+    if(m_YUVCrBuffer)
+    {
+        delete[] m_YUVCrBuffer;
+        m_YUVCrBuffer = NULL;
+    }
+
+    if(m_YUVCbBuffer)
+    {
+        delete[] m_YUVCbBuffer;
+        m_YUVCbBuffer = NULL;
+    }
+
     m_rgb24BufferSize = 0;
-    
+    m_UVBufferSize    = 0;
+    m_pYUVIdx         = 0;
+    if ( NULL != m_pYUVFile )
+    {
+        fclose(m_pYUVFile);
+        m_pYUVFile = NULL;
+    }
     [super dealloc];
 }
 
@@ -435,6 +462,7 @@ int convert_y420nv_to_rgb24_buffer(unsigned char *y, unsigned char *uv, unsigned
     int pixelSamples = 3;
     BOOL hasAlpha = NO;
     BOOL isPlanar = NO;
+
     CGBitmapInfo bitmapInfo = kCGBitmapByteOrder32Big | kCGImageAlphaNone;
     
     if(kCVPixelFormatType_422YpCbCr8 == pixelFormat)
@@ -486,7 +514,55 @@ int convert_y420nv_to_rgb24_buffer(unsigned char *y, unsigned char *uv, unsigned
             m_rgb24BufferSize = width * height * 3;
             m_rgb24Buffer = new unsigned char[m_rgb24BufferSize];
         }
+
+        if( width * height / 4 > m_UVBufferSize)
+        {
+            if(m_YUVCrBuffer)
+            {
+                delete[] m_YUVCrBuffer;
+            }
+
+            if(m_YUVCbBuffer)
+            {
+                delete[] m_YUVCbBuffer;
+            }
+
+            m_UVBufferSize = width * height / 4;
+            m_YUVCrBuffer = new unsigned char[m_UVBufferSize];
+            m_YUVCbBuffer = new unsigned char[m_UVBufferSize];
+        }
+
         convert_y420nv_to_rgb24_buffer((unsigned char *)data[0], (unsigned char *)data[1], m_rgb24Buffer, (unsigned int)width, (unsigned int)height, false);
+
+/*
+         //cover to Y U V ==> 4: 2 : 0
+         int iUVIdx    = 0;
+         int iUVLength = width * height >> 1;
+         unsigned char * pUVBuffer = (unsigned char *)data[1];
+
+         for(iUVIdx =0; iUVIdx < iUVLength; iUVIdx +=2)
+         {
+             m_YUVCbBuffer[iUVIdx/2] = pUVBuffer [iUVIdx];
+             m_YUVCrBuffer[iUVIdx/2] = pUVBuffer [iUVIdx +1 ];
+         }
+
+         if(NULL == m_pYUVFile)
+         {
+             NSString *DestopDir     = @"~/Desktop";
+             DestopDir               = [DestopDir stringByStandardizingPath];
+             NSString *YUVName       = [NSString stringWithFormat:@"%@/TestYUV_420_%dx%d.yuv", DestopDir, width, height];
+             const char* YUVFilePath = [YUVName UTF8String];
+             m_pYUVFile              = fopen(YUVFilePath, "wb");
+         }
+
+         if(m_pYUVFile != NULL && m_pYUVIdx >20)
+         {
+             fwrite ((unsigned char *)data[0] , sizeof(unsigned char), width * height,  m_pYUVFile);
+             fwrite (m_YUVCbBuffer , sizeof(unsigned char), m_UVBufferSize,  m_pYUVFile);
+             fwrite (m_YUVCrBuffer , sizeof(unsigned char), m_UVBufferSize,  m_pYUVFile);
+         }
+         m_pYUVIdx ++;
+*/
         rgbBuffer = m_rgb24Buffer;
         sampleBits = 8;
         pixelSamples = 3;

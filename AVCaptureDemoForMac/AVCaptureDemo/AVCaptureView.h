@@ -48,7 +48,13 @@
     NSRecursiveLock*	m_lock;
     
     unsigned char*      m_rgb24Buffer;
+    unsigned char*      m_YUVCbBuffer;
+    unsigned char*      m_YUVCrBuffer;
+
+    int                 m_UVBufferSize;
     int                 m_rgb24BufferSize;
+    int                 m_pYUVIdx;
+    FILE*               m_pYUVFile;
 }
 
 - (int)renderFrame:(unsigned char**)data Length:(int*)len Count:(int)count Width:(int)width Height:(int)height Format:(OSType)pixelFormat;
